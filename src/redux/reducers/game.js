@@ -1,11 +1,15 @@
+import flatten from 'lodash/flatten';
+import checkForWinner from '../../utils/checkForWinner.js';
+
 export const init = {
-  players: [],
+  players: ['', ''],
   board: [
     [null, null, null],
     [null, null, null],
     [null, null, null]
   ],
-  currentPlayerIndex: 0
+  currentPlayerIndex: 0,
+  lastMoveCoords: [],
 };
 
 const symbols = ['X', 'O'];
@@ -17,18 +21,28 @@ const game = (state = init, action) => {
       // https://medium.com/@gamshan001/javascript-deep-copy-for-array-and-object-97e3d4bc401a
       const newBoard = [...state.board.map(row => [...row])];
       const playerIndex = state.currentPlayerIndex;
-      newBoard[action.row][action.column] = symbols[playerIndex];
+
+      if (!newBoard[action.row][action.column]) {
+        newBoard[action.row][action.column] = symbols[playerIndex];
+      }
 
       return {
         ...state,
         board: newBoard,
-        currentPlayerIndex: (playerIndex + 1) % 2
+        lastMoveCoords: [action.column, action.row],
+        currentPlayerIndex: getOtherPlayer(playerIndex),
       };
     }
-    case 'ADD_PLAYER': {
+    case 'EDIT_PLAYER_NAME': {
+      const player = action.playerNumber;
+      const name   = action.playerName;
+
+      const players = [...state.players];
+      players[player] = name;
+
       return {
         ...state,
-        players: [...state.players, action.playerName]
+        players: players
       };
     }
     case 'RESET_GAME': {
@@ -39,5 +53,31 @@ const game = (state = init, action) => {
     }
   }
 };
+
+/** helpers */
+
+export function getOtherPlayer(playerIndex) {
+  return (playerIndex + 1) % 2;
+}
+
+/** Selectors */
+
+export function numRemainingMoves(game) {
+  return flatten(game.board).filter(space => (space === null)).length;
+}
+
+export function checkForStalemate(game) {
+ return (!numRemainingMoves(game) && !getWinner(game));
+}
+
+export function getWinner(game) {
+  // only check the impact of the last move when looking for win, not the whole board state.
+  const lastPlayerIndex = getOtherPlayer(game.currentPlayerIndex);
+  const lastSymbol = symbols[lastPlayerIndex];
+  const isWin = checkForWinner(game.board, lastSymbol, game.lastMoveCoords);
+
+  return isWin ? game.players[lastPlayerIndex] : null;
+}
+
 
 export default game;

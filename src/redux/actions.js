@@ -2,8 +2,8 @@ export const move = (row, column) => ({
   type: 'MOVE', row, column
 });
 
-export const addPlayer = playerName => ({
-  type: 'ADD_PLAYER', playerName,
+export const editPlayerName = (playerNumber, playerName) => ({
+  type: 'EDIT_PLAYER_NAME', playerName, playerNumber
 });
 
 export const resetGame = () => ({
