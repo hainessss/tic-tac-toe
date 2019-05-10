@@ -1,0 +1,23 @@
+@import 'styles/_sass-includes.scss';
+
+.modal {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 1;
+
+  &.modal--open {
+    .modal__wrapper {
+      width: 100vw;
+      height: 100vh;
+      background-color: rgba(0, 0, 0, 0.2);
+    }
+
+    .modal__body {
+      width: 600px;
+      height: 400px;
+      background-color: $white;
+      margin: auto;
+    }
+  }
+}
