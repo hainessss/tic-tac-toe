@@ -1,16 +1,23 @@
 import React from 'react';
+import styled from 'styled-components';
 
-import Header from 'components/Header';
 import Modal from 'components/Modal';
-import cn from 'utils/cn';
+
+const Container = styled.div`
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+`;
 
 const CoreLayout = ({ showModal, className, children }) => (
   <div className="app core-layout">
-    <Header />
     <Modal />
-    <div className={ cn('row', className) }>
+    <Container>
       { children }
-    </div>
+    </Container>
   </div>
 );
 

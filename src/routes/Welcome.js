@@ -1,73 +1,84 @@
-import React, { useState } from 'react';
+import React from 'react';
+import styled from 'styled-components';
+import { withRouter } from 'react-router-dom';
+
 import { connect } from 'react-redux';
-import { Link } from 'react-router-dom';
+import Input from '../components/Input';
+import Text from '../components/Text';
+import Button from '../components/Button';
+import Header from '../components/Header';
+import { Row, Col } from 'react-flexbox-grid';
 
 import CoreLayout from 'containers/CoreLayout';
-import { addPlayer } from 'redux/actions';
+import { editPlayerName } from 'redux/actions';
 
-const Welcome = ({ dispatch, players }) => {
-  const [value, setValue] = useState('');
+const Container = styled.div`
+  height: 200px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+`;
 
-  const playerHeader = [players[0], players[1]].filter(p => p).join(' vs. ');
-
+const Welcome = ({ dispatch, players, history }) => {
   const handleSubmit = () => {
-    if (value.length > 0) {
-      dispatch(addPlayer(value));
-      setValue('');
+    console.log('players', players);
+    debugger;
+
+    if (players[0] && players[1]) {
+      history.push('/play');
     }
   };
 
-  return (
-    <CoreLayout>
-      <div className="col--center typ--center">
-        <h3 className="typ--bold mb6">Let's play Tic Tac Toe</h3>
-        {
-          playerHeader.length > 0
-            ? (
-              <h3 className="mb4">
-                { playerHeader }
-              </h3>
-            )
-            : null
-        }
+  const handleChange = ({playerNumber, value}) => {
+    dispatch(editPlayerName(playerNumber, value));
+  }
 
-        { players.length < 2
-          ? (
-            <div>
-              <p className="typ--b1 mb2">
-                {
-                  players.length === 0
-                    ? `Enter a name for player number ${players.length + 1}:`
-                    : `Next, enter a name for player number ${players.length + 1}:`
-                }
-              </p>
-              <div>
-                <input
-                  className="form__input mr1"
-                  type="text"
-                  value={value}
-                  onKeyPress={({ key }) => {
-                    if (key === 'Enter') { handleSubmit(); }
-                  }}
-                  onChange={({ target }) => { setValue(target.value) }}
-                />
-                <input
-                  className="btn"
-                  type="submit"
-                  value="Submit"
-                  onClick={ handleSubmit }
-                />
-              </div>
-            </div>
-          )
-          : (
-            <Link className="btn" to="/play">
-              Start the game
-            </Link>
-          )
-        }
-      </div>
-    </CoreLayout>
+  return (
+    <div>
+      <Header>
+        <Text color='white' align='center' size={50} >
+          TIC-TAC-TOE
+        </Text>
+      </Header>
+      <CoreLayout>
+        <Container>
+          <Row center='xs' bottom="xs" between="xs">
+            <Col md={4}>
+              <Text color='white' align='center' weight={600} style={{padding: '16px'}}>
+                Player 1 Name
+              </Text>
+              <Input
+                type="text"
+                value={players[0]}
+                onChange={({ target }) => { handleChange({playerNumber: 0, value: target.value}) }}
+              />
+            </Col>
+            <Col md={2}>
+              {/* need to handle padding better */}
+              <Text color='white' align='center' style={{padding: '8px 8px 24px 8px'}}>
+                VS
+              </Text>
+            </Col>
+            <Col md={4} >
+              <Text color='white' align='center' weight={600} style={{padding: '16px'}}>
+                Player 2 Name
+              </Text>
+              <Input
+                type="text"
+                value={players[1]}
+                onChange={({ target }) => { handleChange({playerNumber: 1, value: target.value}) }}
+              />
+            </Col>
+          </Row>
+          <Row center='xs'>
+            <Button color='navy' background='white' onClick={ () => handleSubmit() }>
+              play
+            </Button>
+          </Row>
+        </Container>
+      </CoreLayout>
+    </div>
   );
 }
 
@@ -75,4 +86,4 @@ const mapStateToProps = state => ({
   players: state.game.players
 });
 
-export default connect(mapStateToProps)(Welcome);
+export default withRouter(connect(mapStateToProps)(Welcome));

@@ -1,25 +1,23 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
-import { func } from 'prop-types';
-
-import { resetGame } from 'redux/actions';
-import './Header.scss';
+import Logo from './Logo';
+import Container from './Container';
 
 const Header = (props) => {
-  const { dispatch } = props;
+  const { children } = props;
 
   return (
-    <header className="header">
-      <Link to="/"><img src={ require('assets/logo.svg') } alt="Tic Tac Toe" /></Link>
-
-      <Link to="/" className="btn" onClick={ () => dispatch(resetGame()) }>Start a new game</Link>
-    </header>
+    <Container>
+      <Link to="/"><Logo src={ require('assets/logo.png') } alt="Tic Tac Toe" /></Link>
+      { children }
+    </Container>
   )
 }
 
-Header.propTypes = {
-  dispatch: func.isRequired
-};
+// not using for now
+// Header.propTypes = {
+//   dispatch: func.isRequired
+// };
 
 export default connect()(Header);
